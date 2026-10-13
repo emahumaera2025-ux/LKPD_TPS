@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena TPS - Mobile Legends Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Rajdhani:wght@600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ml: {
+                            bg: '#080511',
+                            card: '#120b22',
+                            cardOrange: '#220e06',
+                            purple: '#7e22ce',
+                            purpleSoft: '#c084fc',
+                            orange: '#f97316',
+                            orangeSoft: '#fb923c',
+                            gold: '#f5c518',
+                            cyan: '#00f0ff',
+                            dark: '#05020a'
+                        }
+                    },
+                    fontFamily: {
+                        title: ['Teko', 'sans-serif'],
+                        header: ['Rajdhani', 'sans-serif'],
+                        body: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #080511;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 15% 30%, rgba(126, 34, 206, 0.2) 0%, transparent 45%),
+                radial-gradient(circle at 85% 70%, rgba(249, 115, 22, 0.15) 0%, transparent 45%);
+            font-family: 'Poppins', sans-serif;
+            color: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        .ml-title {
+            font-family: 'Teko', sans-serif;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(245, 197, 24, 0.3);
+        }
+
+        .ml-card-gold {
+            background: linear-gradient(145deg, #18102b 0%, #0d0718 100%);
+            border: 1px solid #f5c518;
+            box-shadow: 0 0 15px rgba(245, 197, 24, 0.15);
+        }
+
+        .ml-card-cyan {
+            background: linear-gradient(145deg, #0d1b2a 0%, #060e17 100%);
+            border: 1px solid #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+
+        .ml-card-orange {
+            background: linear-gradient(145deg, #281106 0%, #120601 100%);
+            border: 1px solid #f97316;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+        }
+
+        .ml-btn-gold {
+            background: linear-gradient(180deg, #fce055 0%, #d49e00 100%);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(245, 197, 24, 0.4);
+            transition: all 0.2s ease;
+        }
+        .ml-btn-gold:hover:not(:disabled) {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(245, 197, 24, 0.7);
+        }
+
+        .ml-btn-cyan {
+            background: linear-gradient(180deg, #38f9ff 0%, #0088cc 100%);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+        .ml-btn-cyan:hover:not(:disabled) {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        .ml-btn-orange {
+            background: linear-gradient(180deg, #ff8c42 0%, #ea580c 100%);
+            color: #fff;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 12px rgba(234, 88, 12, 0.4);
+        }
+        .ml-btn-orange:hover:not(:disabled) {
+            filter: brightness(1.15);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(100%) !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(10, 4, 16, 0.8);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #f5c518 0%, #7e22ce 100%);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6 custom-scroll">
+
+    <header class="max-w-7xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-center border-b-2 border-ml-gold/40 pb-4 px-2">
+        <div class="flex items-center gap-4">
+            <div class="relative flex items-center justify-center w-14 h-14 bg-ml-dark border-2 border-ml-gold rounded-full shadow-[0_0_15px_rgba(245,197,24,0.5)] overflow-hidden">
+                <!-- Using the requested image explicitly -->
+                <img src="image_dda810.png" alt="Arena Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/60x60/120b22/f5c518?text=TPS';">
+            </div>
+            <div>
+                <h1 class="ml-title text-4xl md:text-5xl uppercase font-bold text-transparent bg-clip-text bg-gradient-to-r from-ml-gold via-ml-orangeSoft to-ml-cyan leading-none">
+                    THINK-PAIR-SHARE ARENA
+                </h1>
+                <p class="text-xs text-ml-cyan font-header tracking-[0.25em] uppercase font-semibold">Mobile Legends: Bang Bang Pedagogical Mode</p>
+            </div>
+        </div>
+
+        <div id="user-status-bar" class="mt-4 md:mt-0 flex items-center gap-4">
+            <!-- Dynamic Content via JS -->
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto">
+        <section id="login-screen" class="max-w-md mx-auto ml-card-gold p-6 rounded-2xl relative overflow-hidden">
+            <div class="text-center mb-6">
+                <h2 class="ml-title text-4xl text-ml-gold tracking-wide">MASUK MATCHMAKING</h2>
+                <p class="text-xs text-gray-400 font-header uppercase">Pilih Peran Anda Untuk Memulai Diskusi</p>
+            </div>
+            
+            <div class="flex border-b border-ml-gold/30 mb-6">
+                <button id="tab-btn-murid" onclick="switchLoginTab('murid')" class="flex-1 py-2 font-header text-xl font-bold text-ml-gold border-b-2 border-ml-gold">MURID (PLAYER)</button>
+                <button id="tab-btn-guru" onclick="switchLoginTab('guru')" class="flex-1 py-2 font-header text-xl font-bold text-gray-400">GURU (GAME MASTER)</button>
+            </div>
+
+            <!-- Login Murid Form -->
+            <form id="form-login-murid" onsubmit="loginMurid(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-header uppercase text-ml-cyan mb-1">Nama Lengkap Murid</label>
+                    <input type="text" id="login-nama-murid" required placeholder="Masukkan Nama Lengkap Anda..." class="w-full bg-ml-dark border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl ml-btn-gold uppercase font-header text-xl tracking-wider flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-gamepad"></i> Masuk Pembelajaran
+                </button>
+            </form>
+
+            <!-- Login Guru Form -->
+            <form id="form-login-guru" onsubmit="loginGuru(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-header uppercase text-ml-purpleSoft mb-1">Kunci Akses Master</label>
+                    <input type="password" id="login-sandi-guru" required placeholder="Ketik Sandi Akses Guru..." class="w-full bg-ml-dark border border-ml-purpleSoft/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-gold text-sm">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl ml-btn-cyan uppercase font-header text-xl tracking-wider flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-crown"></i> Enter Master Room
+                </button>
+            </form>
+        </section>
+
+        <section id="guru-dashboard" class="hidden space-y-6">
+            <!-- Navigation Sub-Tabs -->
+            <div class="flex flex-wrap gap-2 border-b border-ml-gold/30 pb-3">
+                <button onclick="switchGuruTab('tab-input-murid')" class="guru-nav-btn ml-btn-gold px-4 py-2 rounded-lg font-header font-bold text-sm">1. Data Murid</button>
+                <button onclick="switchGuruTab('tab-input-kasus')" class="guru-nav-btn bg-ml-dark hover:bg-ml-purple/40 px-4 py-2 rounded-lg font-header font-bold text-sm border border-ml-gold/20">2. Input Kasus</button>
+                <button onclick="switchGuruTab('tab-kelompok')" class="guru-nav-btn bg-ml-dark hover:bg-ml-purple/40 px-4 py-2 rounded-lg font-header font-bold text-sm border border-ml-gold/20">3. Acak Kelompok</button>
+                <button onclick="switchGuruTab('tab-jawaban')" class="guru-nav-btn bg-ml-dark hover:bg-ml-purple/40 px-4 py-2 rounded-lg font-header font-bold text-sm border border-ml-gold/20">4. Hasil & Nilai</button>
+                <button onclick="switchGuruTab('tab-presentasi')" class="guru-nav-btn bg-ml-dark hover:bg-ml-orange/40 px-4 py-2 rounded-lg font-header font-bold text-sm text-ml-orangeSoft border border-ml-orange/40">5. Arena Presentasi</button>
+            </div>
+
+            <!-- Tab 1: Input Murid -->
+            <div id="tab-input-murid" class="guru-tab-content ml-card-gold p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="ml-title text-3xl text-ml-gold"><i class="fa-solid fa-users mr-2"></i> Data Murid (Terdaftar: <span id="count-murid" class="text-ml-cyan">0</span>)</h3>
+                    <button onclick="muat35SiswaBawaan()" class="ml-btn-cyan px-3 py-1.5 rounded-lg text-xs uppercase font-header">
+                        <i class="fa-solid fa-bolt mr-1"></i> Load Default Siswa
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-header uppercase text-gray-300 mb-2">Input Manual (Satu Nama per Baris):</label>
+                        <textarea id="input-murid-text" rows="8" placeholder="Contoh:&#10;Ahmad Rizky&#10;Budi Santoso&#10;Citra Dewi..." class="w-full bg-ml-dark border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm custom-scroll"></textarea>
+                        <button onclick="simpanTextMurid()" class="mt-3 ml-btn-gold px-5 py-2 rounded-xl text-sm font-header font-bold">
+                            <i class="fa-solid fa-plus mr-1"></i> Tambah Ke Squad
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-header uppercase text-gray-300 mb-2">Impor dari File (.txt / .csv):</label>
+                        <input type="file" id="file-murid-input" accept=".txt,.csv" onchange="importMuridFile(event)" class="block w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-ml-purple file:text-white hover:file:bg-ml-gold cursor-pointer">
+                        
+                        <div class="mt-4">
+                            <p class="text-xs text-ml-cyan mb-2 font-header uppercase">Daftar Roster Terdaftar:</p>
+                            <div id="list-murid-box" class="h-44 overflow-y-auto bg-ml-dark/90 p-3 rounded-lg border border-ml-gold/30 text-xs space-y-1 custom-scroll">
+                                <!-- Dynamic List -->
+                            </div>
+                            <button onclick="resetDaftarMurid()" class="mt-3 text-xs text-red-400 hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> Kosongkan Semua Murid
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Input Kasus -->
+            <div id="tab-input-kasus" class="guru-tab-content ml-card-gold p-6 rounded-2xl hidden">
+                <h3 class="ml-title text-3xl text-ml-gold mb-4"><i class="fa-solid fa-book-open mr-2"></i> Quest & Case Management</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-header uppercase text-gray-300 mb-1">Judul Kasus / Quest</label>
+                            <input type="text" id="kasus-judul" placeholder="Contoh: Analisis Meta Strategi TPS" class="w-full bg-ml-dark border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-header uppercase text-gray-300 mb-1">Deskripsi / Detail Pertanyaan</label>
+                            <textarea id="kasus-deskripsi" rows="4" placeholder="Tuliskan materi studi kasus secara lengkap di sini..." class="w-full bg-ml-dark border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm custom-scroll"></textarea>
+                        </div>
+                        <button onclick="tambahKasus()" class="ml-btn-gold w-full py-2.5 rounded-xl text-sm uppercase font-header font-bold">
+                            <i class="fa-solid fa-file-circle-plus mr-1"></i> Simpan Studi Kasus
+                        </button>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-ml-cyan mb-2 font-header uppercase">Daftar Kasus Aktif:</p>
+                        <div id="list-kasus-box" class="h-80 overflow-y-auto bg-ml-dark/90 p-3 rounded-lg border border-ml-gold/30 space-y-2 custom-scroll">
+                            <!-- Dynamic List Kasus -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Acak Kelompok -->
+            <div id="tab-kelompok" class="guru-tab-content ml-card-gold p-6 rounded-2xl hidden">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="ml-title text-3xl text-ml-gold"><i class="fa-solid fa-shuffle mr-2"></i> MATCHMAKING KELOMPOK</h3>
+                        <p class="text-xs text-gray-300 font-header uppercase">Klik tombol acak untuk membagi murid terdaftar secara otomatis.</p>
+                    </div>
+                    <button onclick="acakKelompokSistem()" class="ml-btn-gold px-6 py-3 rounded-xl font-header font-bold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-dice-d20 text-2xl"></i> ACAK SQUAD SEKARANG!
+                    </button>
+                </div>
+
+                <div id="arena-kelompok-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Cards Kelompok -->
+                </div>
+            </div>
+
+            <!-- Tab 4: Hasil & Nilai -->
+            <div id="tab-jawaban" class="guru-tab-content ml-card-gold p-6 rounded-2xl hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 border-b border-ml-gold/30 pb-3">
+                    <h3 class="ml-title text-3xl text-ml-gold"><i class="fa-solid fa-award mr-2"></i> REKAP JAWABAN & EVALUASI SQUAD</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="downloadHasilKerja('csv')" class="ml-btn-cyan px-4 py-2 rounded-lg text-xs font-header font-bold uppercase flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-file-csv text-base"></i> Download CSV (Excel)
+                        </button>
+                        <button onclick="downloadHasilKerja('txt')" class="ml-btn-gold px-4 py-2 rounded-lg text-xs font-header font-bold uppercase flex items-center gap-1.5 shadow-md text-black">
+                            <i class="fa-solid fa-file-lines text-base"></i> Download Laporan TXT
+                        </button>
+                    </div>
+                </div>
+                <div id="list-jawaban-kelompok" class="space-y-6">
+                    <!-- Content dynamic -->
+                </div>
+            </div>
+
+            <!-- Tab 5: Arena Presentasi -->
+            <div id="tab-presentasi" class="guru-tab-content ml-card-orange p-6 rounded-2xl hidden space-y-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-ml-orange/40 pb-4">
+                    <div>
+                        <h3 class="ml-title text-4xl text-transparent bg-clip-text bg-gradient-to-r from-ml-gold via-ml-orangeSoft to-yellow-200">
+                            <i class="fa-solid fa-fire mr-2"></i> ARENA PRESENTASI DRAFT PICK
+                        </h3>
+                        <p class="text-xs text-gray-300 font-header uppercase">Acak 3 Kelompok Sekaligus Untuk Bertanding Di Panggung Presentasi</p>
+                    </div>
+                    <button id="btn-pick-3" onclick="acak3KelompokPresentasi()" class="ml-btn-orange px-6 py-3 rounded-xl font-header font-bold text-lg">
+                        <i class="fa-solid fa-bolt mr-2"></i> PICK 3 KELOMPOK MAJU!
+                    </button>
+                </div>
+
+                <div>
+                    <h4 class="font-header text-sm text-ml-gold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-crosshairs text-ml-orange"></i> Kelompok Terpilih Saat Ini (Active Draft):
+                    </h4>
+                    <div id="panggung-presentasi-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Dynamic Selected Slots -->
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-ml-orange/30">
+                    <div class="bg-ml-dark/80 p-5 rounded-2xl border border-ml-gold/40">
+                        <div class="flex justify-between items-center mb-3 border-b border-ml-gold/20 pb-2">
+                            <h4 class="font-header text-lg text-ml-cyan font-bold uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-hourglass-half text-ml-cyan"></i> Sisa Kelompok
+                            </h4>
+                            <span id="badge-count-sisa" class="bg-ml-cyan/20 text-ml-cyan font-header text-xs font-bold px-3 py-1 rounded-full border border-ml-cyan/40">0 Group</span>
+                        </div>
+                        <div id="list-kelompok-sisa" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-80 overflow-y-auto pr-1 custom-scroll">
+                            <!-- Dynamic remaining groups -->
+                        </div>
+                    </div>
+
+                    <div class="bg-ml-dark/80 p-5 rounded-2xl border border-green-500/40">
+                        <div class="flex justify-between items-center mb-3 border-b border-green-500/20 pb-2">
+                            <h4 class="font-header text-lg text-green-400 font-bold uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-green-400"></i> Kelompok Selesai
+                            </h4>
+                            <span id="badge-count-selesai" class="bg-green-500/20 text-green-400 font-header text-xs font-bold px-3 py-1 rounded-full border border-green-500/40">0 Group</span>
+                        </div>
+                        <div id="list-kelompok-selesai" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-80 overflow-y-auto pr-1 custom-scroll">
+                            <!-- Dynamic finished groups -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="murid-dashboard" class="hidden space-y-6">
+            <div class="ml-card-gold p-6 rounded-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-ml-gold/30 pb-4">
+                    <div>
+                        <span class="bg-ml-gold/20 text-ml-gold border border-ml-gold/40 px-3 py-1 rounded-full text-xs font-bold font-header uppercase">Disciple Player</span>
+                        <h2 id="murid-welcome-name" class="ml-title text-4xl text-ml-gold mt-1">NAMA MURID</h2>
+                        <p id="murid-group-info" class="text-sm text-ml-cyan font-header font-bold">Status Kelompok: Belum Diacak Guru</p>
+                    </div>
+                    <div id="murid-team-members" class="bg-ml-dark/90 p-4 rounded-xl border border-ml-gold/30 text-xs w-full md:w-auto">
+                        <!-- Teman Squad -->
+                    </div>
+                </div>
+
+                <!-- Live Scoreboard murid -->
+                <div id="murid-live-score" class="mb-6 bg-gradient-to-r from-purple-900/40 via-ml-dark to-yellow-900/40 p-4 rounded-xl border border-ml-gold/50 flex flex-wrap justify-around items-center gap-4 text-center">
+                    <div>
+                        <span class="text-xs font-header text-gray-400 uppercase block">Nilai Pribadi Anda</span>
+                        <span id="score-pribadi" class="text-3xl font-title text-ml-cyan font-bold">-</span>
+                    </div>
+                    <div class="h-8 w-px bg-ml-gold/30 hidden sm:block"></div>
+                    <div>
+                        <span class="text-xs font-header text-gray-400 uppercase block">Nilai Kelompok (Squad)</span>
+                        <span id="score-kelompok" class="text-3xl font-title text-ml-gold font-bold">-</span>
+                    </div>
+                </div>
+
+                <!-- Bagian LKPD: A. Tujuan Pembelajaran & B. Petunjuk Pengerjaan -->
+                <div class="mb-6 bg-ml-dark/90 p-5 rounded-xl border border-ml-gold/40 space-y-4">
+                    <button type="button" onclick="document.getElementById('lkpd-info-content').classList.toggle('hidden')" class="w-full flex justify-between items-center text-left focus:outline-none">
+                        <span class="font-header text-xl text-ml-gold uppercase font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-ml-gold"></i> A. TUJUAN PEMBELAJARAN & B. PETUNJUK PENGERJAAN LKPD
+                        </span>
+                        <span class="text-xs text-ml-cyan font-header uppercase flex items-center gap-1">
+                            [ Buka / Tutup Details ] <i class="fa-solid fa-chevron-down"></i>
+                        </span>
+                    </button>
+
+                    <div id="lkpd-info-content" class="hidden pt-3 border-t border-ml-gold/20 space-y-4 text-xs text-gray-200 leading-relaxed">
+                        <div>
+                            <h4 class="font-header text-sm text-ml-cyan uppercase font-bold mb-2">A. Tujuan Pembelajaran</h4>
+                            <ol class="list-decimal list-inside space-y-1 pl-1 text-gray-300">
+                                <li>Murid mampu menjelaskan konsep berpikir komputasional dalam memecahkan masalah melalui kegiatan pengamatan ilustrasi studi kasus dan diskusi kelompok dengan tepat.</li>
+                                <li>Murid mampu mengidentifikasi teknik/fondasi berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, dan algoritma) yang sesuai dengan masalah yang dihadapi melalui kegiatan Think Pair Share (TPS) dengan tepat.</li>
+                                <li>Murid mampu menyusun peta konsep hasil dari berpikir komputasional melalui kegiatan Think Pair Share dan investigasi kelompok dengan sistematis.</li>
+                                <li>Murid mampu menerapkan berpikir komputasional dengan menggunakan diagram alir untuk menyelesaikan studi kasus pada bidang keahlian Desain Komunikasi Visual dengan tepat.</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h4 class="font-header text-sm text-ml-cyan uppercase font-bold mb-2">B. Petunjuk Pengerjaan</h4>
+                            <p class="mb-2">LKPD ini dikerjakan melalui sistem games TPS. Ikuti tahapan berikut secara berurutan:</p>
+                            <ul class="list-disc list-inside space-y-1.5 pl-1 text-gray-300">
+                                <li><strong class="text-ml-gold">1. THINK (Kerja Individu):</strong> Login ke sistem games. Baca kasus yang tersedia, lalu jawab pertanyaan pada bagian THINK secara mandiri terlebih dahulu, sebelum berdiskusi dengan pasangan.</li>
+                                <li><strong class="text-ml-cyan">2. PAIR (Diskusi Berpasangan):</strong> Diskusikan jawabanmu dengan pasangan satu kelompok. Bandingkan, saling koreksi, dan sepakati satu jawaban terbaik. Tuliskan hasil kesepakatan pada bagian PAIR, lalu input jawaban akhir ke sistem games.</li>
+                                <li><strong class="text-ml-orangeSoft">3. SHARE (Berbagi Hasil):</strong> Sampaikan ringkasan hasil diskusi kelompok di depan kelas secara singkat, jelas, dan runtut. Tanggapi juga masukan dari kelompok lain.</li>
+                            </ul>
+                            <p class="mt-2 text-gray-400 italic">* Kasus yang dibahas setiap kelompok berbeda-beda.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- C. Orientasi Masalah / Kasus yang Ditugaskan -->
+                <div class="mb-6 bg-ml-dark/80 p-5 rounded-xl border border-ml-cyan/40 space-y-3 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+                    <h3 class="font-header text-base text-ml-cyan uppercase tracking-wider font-bold"><i class="fa-solid fa-scroll mr-2"></i> C. ORIENTASI MASALAH (Pos Tugas Kelompok Anda):</h3>
+                    <h4 id="murid-kasus-judul" class="text-xl font-bold text-ml-gold">Menunggu Penugasan Kasus...</h4>
+                    <p id="murid-kasus-deskripsi" class="text-sm text-gray-300 whitespace-pre-line leading-relaxed"></p>
+                </div>
+
+                <!-- Form Pendapat & Diskusi Berdasarkan LKPD -->
+                <form onsubmit="simpanJawabanMurid(event)" class="space-y-8">
+                    
+                    <!-- FASE D: THINK -->
+                    <div class="space-y-4">
+                        <div class="border-b-2 border-ml-gold pb-2 mb-4">
+                            <h3 class="font-header text-2xl text-ml-gold uppercase font-bold">
+                                <i class="fa-solid fa-brain mr-2"></i> D. TAHAP THINK (Kerja Individu)
+                            </h3>
+                            <p class="text-xs text-gray-400 mt-1">Kerjakan sendiri dahulu sebelum berdiskusi dengan pasangan.</p>
+                        </div>
+                        <div id="container-pendapat-pribadi" class="space-y-6">
+                            <!-- Dynamic Inputs per member will be injected here via JS -->
+                        </div>
+                    </div>
+
+                    <!-- FASE E: PAIR -->
+                    <div class="space-y-4 bg-ml-dark/90 p-5 rounded-2xl border border-ml-cyan/50 mt-8">
+                        <div class="border-b-2 border-ml-cyan pb-2 mb-4">
+                            <h3 class="font-header text-2xl text-ml-cyan uppercase font-bold">
+                                <i class="fa-solid fa-people-group mr-2"></i> E. TAHAP PAIR (Diskusi Berpasangan)
+                            </h3>
+                            <p class="text-xs text-gray-400 mt-1">Diskusikan hasil THINK dengan teman kelompok, saling mengecek dan menyempurnakan jawaban. Tuliskan hasil kesepakatan kelompok di bawah ini, lalu input ke sistem games.</p>
+                        </div>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-header uppercase text-white mb-2 font-bold">1. Kesepakatan Identifikasi Empat Fondasi CT</label>
+                                <textarea id="pair-q1" rows="3" required placeholder="Tuliskan kesepakatan identifikasi 4 fondasi CT (dekomposisi, pengenalan pola, abstraksi, dan algoritma)..." class="w-full bg-ml-card border border-ml-cyan/50 rounded-lg p-3 text-white focus:outline-none focus:border-ml-gold text-sm custom-scroll"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-header uppercase text-white mb-2 font-bold">2. Pilih salah-satu cara untuk menggambarkan cara kalian menyelesaikan masalah</label>
+                                <p class="text-xs text-gray-400 mb-2">Peta Konsep (Gambarkan peta konsep yang menunjukkan hubungan antara masalah utama, keempat fondasi berpikir komputasional, dan tahapan produksi desain pada kasus kalian), Diagram Alir (Susun diagram alir final hasil kesepakatan kelompok untuk menyelesaikan kasus kalian).</p>
+                                <textarea id="pair-q2" rows="5" required placeholder="MULAI&#10;1. ...&#10;SELESAI" class="w-full bg-ml-card border border-ml-cyan/50 rounded-lg p-3 text-white focus:outline-none focus:border-ml-gold text-sm custom-scroll font-mono"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-header uppercase text-white mb-2 font-bold">3. Kesimpulan Kelompok</label>
+                                <p class="text-xs text-gray-400 mb-2">Tuliskan satu-dua kalimat kesimpulan tentang manfaat berpikir komputasional dalam kasus kalian.</p>
+                                <textarea id="pair-q3" rows="3" required placeholder="Tuliskan kesimpulan tentang manfaat berpikir komputasional pada kasus kalian..." class="w-full bg-ml-card border border-ml-cyan/50 rounded-lg p-3 text-white focus:outline-none focus:border-ml-gold text-sm custom-scroll"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FASE F: SHARE -->
+                    <div class="space-y-4 bg-ml-dark/90 p-5 rounded-2xl border border-ml-orange/50 mt-8">
+                        <div class="border-b-2 border-ml-orange pb-2 mb-4">
+                            <h3 class="font-header text-2xl text-ml-orangeSoft uppercase font-bold">
+                                <i class="fa-solid fa-share-nodes mr-2"></i> F. TAHAP SHARE (Berbagi Hasil)
+                            </h3>
+                            <p class="text-xs text-gray-400 mt-1">Presentasi hasil diskusi dan catat masukan/tanggapan dari kelompok lain saat sesi diskusi kelas.</p>
+                        </div>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-header uppercase text-white mb-2 font-bold">1. Presentasi hasil diskusi</label>
+                                <textarea id="share-ringkasan" rows="3" placeholder="Tuliskan poin-poin utama ringkasan yang akan disampaikan saat presentasi..." class="w-full bg-ml-card border border-ml-orange/50 rounded-lg p-3 text-white focus:outline-none focus:border-ml-gold text-sm custom-scroll"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-header uppercase text-white mb-2 font-bold">2. Catatan / Tanggapan dari Kelompok Lain</label>
+                                <textarea id="share-tanggapan" rows="3" placeholder="Tuliskan masukan, saran, atau pertanyaaan dari kelompok lain saat presentasi..." class="w-full bg-ml-card border border-ml-orange/50 rounded-lg p-3 text-white focus:outline-none focus:border-ml-gold text-sm custom-scroll"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="ml-btn-gold w-full py-4 rounded-xl font-header font-bold text-2xl uppercase tracking-wider flex items-center justify-center gap-2 mt-4 shadow-[0_0_20px_rgba(245,197,24,0.3)]">
+                        <i class="fa-solid fa-paper-plane"></i> Kirimkan Hasil Diskusi LKPD Ke Guru
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <div id="modal-ppt" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col justify-between p-3 md:p-6 backdrop-blur-lg overflow-hidden">
+            <div class="flex-shrink-0 flex justify-between items-center border-b-2 border-ml-gold/40 pb-3 max-w-6xl mx-auto w-full">
+                <div>
+                    <h2 id="ppt-group-title" class="ml-title text-3xl md:text-4xl text-ml-gold leading-none">KELOMPOK PRESENTASI</h2>
+                    <p id="ppt-group-members" class="text-xs text-ml-cyan font-header tracking-wide"></p>
+                </div>
+                <div class="flex items-center gap-3 bg-ml-dark px-5 py-2 rounded-xl border border-ml-gold">
+                    <i class="fa-solid fa-stopwatch text-2xl text-ml-gold"></i>
+                    <div>
+                        <div id="ppt-timer-display" class="font-title text-3xl text-ml-gold font-bold leading-none">05:00</div>
+                        <span class="text-[9px] text-gray-400 font-header uppercase block text-center">Sisa Waktu</span>
+                    </div>
+                </div>
+                <button onclick="closePPTModal()" class="text-gray-400 hover:text-white text-3xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex-1 max-w-6xl mx-auto w-full bg-ml-card-gold p-4 md:p-6 rounded-2xl shadow-2xl flex flex-col my-4 overflow-hidden border-2 border-ml-gold">
+                <div class="flex-shrink-0 border-b border-ml-gold/30 pb-3 mb-3">
+                    <span class="text-xs font-header uppercase text-ml-cyan">Quest Studi Kasus:</span>
+                    <h3 id="ppt-kasus-judul" class="text-lg md:text-xl font-bold text-ml-gold"></h3>
+                </div>
+
+                <div id="ppt-slide-content" class="flex-1 overflow-y-auto pr-3 space-y-6 text-sm md:text-base leading-relaxed custom-scroll pb-10">
+                    <!-- Dynamic Slide Content -->
+                </div>
+            </div>
+
+            <div class="flex-shrink-0 flex flex-wrap justify-between items-center max-w-6xl mx-auto w-full border-t-2 border-ml-gold/40 pt-3 gap-2">
+                <div class="flex gap-2">
+                    <button id="btn-toggle-timer" onclick="togglePPTTimer()" class="ml-btn-cyan px-5 py-2 rounded-xl font-header font-bold text-sm">
+                        <i id="icon-timer-btn" class="fa-solid fa-pause mr-1"></i> <span id="text-timer-btn">Jeda Timer</span>
+                    </button>
+                    <button onclick="resetPPTTimer()" class="bg-ml-dark border border-ml-gold/40 hover:bg-ml-gold/20 px-4 py-2 rounded-xl font-header font-bold text-sm text-gray-300">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Reset Timer
+                    </button>
+                </div>
+                <button onclick="finishPresentation()" class="ml-btn-gold px-6 py-2.5 rounded-xl font-header font-bold text-base text-black">
+                    <i class="fa-solid fa-check-double mr-2"></i> TANDAI SELESAI PRESENTASI
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+        <!-- Custom Confirmation Modal -->
+        <div id="modal-confirm" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="ml-card-gold p-6 rounded-2xl max-w-sm w-full border-2 border-ml-gold space-y-4 text-center">
+                <i class="fa-solid fa-triangle-exclamation text-4xl text-ml-gold animate-bounce"></i>
+                <h3 id="confirm-title" class="font-title text-2xl text-ml-gold uppercase">Konfirmasi</h3>
+                <p id="confirm-msg" class="text-sm text-gray-300"></p>
+                <div class="flex gap-3 justify-center pt-2">
+                    <button id="confirm-btn-cancel" class="px-4 py-2 bg-ml-dark hover:bg-gray-800 rounded-lg text-xs font-header uppercase font-bold text-gray-300 border border-gray-600">Batal</button>
+                    <button id="confirm-btn-ok" class="ml-btn-gold px-5 py-2 rounded-lg text-xs font-header uppercase font-bold text-black">Ya, Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            try {
+                if (!audioCtx) audioCtx = new AudioContext();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch(e) {}
+        }
+
+        function playClickSound() {
+            try {
+                initAudio();
+                if (audioCtx) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                }
+            } catch(e) {}
+        }
+
+        function playVictorySound() {
+            try {
+                initAudio();
+                if (audioCtx) {
+                    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.1));
+                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime + (idx * 0.1));
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (idx * 0.1) + 0.5);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(audioCtx.currentTime + (idx * 0.1));
+                        osc.stop(audioCtx.currentTime + (idx * 0.1) + 0.5);
+                    });
+                }
+            } catch(e) {}
+            if ('speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                    const text = "Victory, mission accomplished!";
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.1;
+                    window.speechSynthesis.speak(utterance);
+                } catch(e) {}
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border font-header tracking-wide text-sm shadow-xl transition-all duration-300 transform translate-y-[-10px] opacity-0 ${
+                type === 'error' ? 'bg-red-950/90 border-red-500 text-red-200' :
+                type === 'warning' ? 'bg-amber-950/90 border-amber-500 text-amber-200' :
+                type === 'success' ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200' :
+                'bg-ml-card border-ml-gold text-ml-gold'
+            }`;
+            toast.innerHTML = `
+                <i class="fa-solid ${
+                    type === 'error' ? 'fa-circle-xmark text-red-400' :
+                    type === 'warning' ? 'fa-triangle-exclamation text-amber-400' :
+                    type === 'success' ? 'fa-circle-check text-emerald-400' :
+                    'fa-circle-info text-ml-cyan'
+                } text-lg"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+            }, 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-10px]');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        let confirmCallback = null;
+        function showCustomConfirm(message, onConfirm) {
+            document.getElementById('confirm-msg').innerText = message;
+            confirmCallback = onConfirm;
+            document.getElementById('modal-confirm').classList.remove('hidden');
+        }
+        function closeCustomConfirm() {
+            document.getElementById('modal-confirm').classList.add('hidden');
+            confirmCallback = null;
+        }
+        document.getElementById('confirm-btn-ok').onclick = () => {
+            if (confirmCallback) confirmCallback();
+            closeCustomConfirm();
+        };
+        document.getElementById('confirm-btn-cancel').onclick = closeCustomConfirm;
+
+        const default35Students = [
+            "ABHIYASA PUTRA ALDARYFANI", "ANANDA VITTO ADITYA PUTRA", "ARYA DWI PANDU WICAKSONO", "AURELIO BARCA ADIWANGSA", "DAVID ALLEN ANUGERAH",
+            "LUTFAN MACHUS NUGROHO", "MUHAMAD TEGUH FEBRIYANSYAH", "MUHAMMAD ABDUL DAWWAS", "MUHAMMAD ABIEL PUTRA WIBOWO", "MUHAMMAD ALDAFA SAPUTRA",
+            "MUHAMMAD ANGGAS FAHRI IRAWAN", "MUHAMMAD BISMA BRILLIAN SAPTOTO", "MUHAMMAD CEVIN PUTRA MEDA", "MUHAMMAD DAFA FEBRIAN WAHNURI",
+            "MUHAMMAD FAHRI NUR AZZAM", "MUHAMMAD HUDA PUTRA MUDANTO", "MUHAMMAD JUNIOR FARHAN WAHYUDI", "MUHAMMAD ZAKI PERMANA", "NATANELIA AZZARIA ALYUSUF",
+            "NAYLA MAHARDIKA PRASASTI", "NUR EVAN SATRIA PRATAMA", "NURUL USWAHTUN HASANAH", "PANDU RYAN PAMUNGKAS", "QIENKIN AURELIN AMANDA",
+            "RADITYA LISTIAN PRASETYO", "RAFA PRATAMA SAPUTRA", "RAY MAHENDRA PUTRA", "RETNO NAWANG SARI", "RIRIN LESTARI", "RISANG RAMADHAN", "SRI LESTARI",
+            "TEGAR PUTRA PRASTIKA", "WIJDAN PRIYA PRATAMA", "YORDAN HAFIS YUDISTIRA", "ZAMIR ALFAD GTHA"
+        ];
+
+        const defaultCases = [
+            { id: 1, title: "Studi Kasus 1: Merancang Logo UMKM Baru", desc: "Sebuah usaha kecil minuman kopi keliling meminta dibuatkan logo baru. Tim desain menerima brief nama usaha dan kesan yang diinginkan (hangat dan modern), lalu membuat beberapa sketsa alternatif bentuk logo, memilih satu sketsa terbaik, mendigitalkannya, meminta persetujuan pemilik usaha, melakukan revisi warna, dan akhirnya menyerahkan file logo final dalam berbagai format." },
+            { id: 2, title: "Studi Kasus 2: Membuat Poster Acara Sekolah", desc: "Panitia perayaan hari kemerdekaan sekolah meminta poster acara. Tim desain mengumpulkan referensi tema kemerdekaan, membuat sketsa tata letak (thumbnail), mendigitalkan poster menggunakan aplikasi desain, mengirimkan draf ke panitia untuk direvisi dua kali, lalu mencetak poster final untuk ditempel di mading sekolah." },
+            { id: 3, title: "Studi Kasus 3: Mendesain Kemasan Produk Makanan Ringan", desc: "Sebuah usaha keripik singkong rumahan ingin kemasan baru yang lebih menarik. Desainer meriset kemasan kompetitor, membuat sketsa bentuk dan tata letak label, mendigitalkan desain kemasan, menguji cetak contoh (prototipe), merevisi ukuran huruf agar lebih terbaca, lalu menyerahkan file siap cetak ke percetakan." },
+            { id: 4, title: "Studi Kasus 4: Membuat Ilustrasi Maskot Sekolah", desc: "Sekolah ingin memiliki maskot baru untuk kegiatan promosi. Tim desain meriset karakter maskot sekolah lain sebagai referensi, membuat beberapa sketsa karakter, memilih satu konsep, mendigitalkan ilustrasi dengan pewarnaan digital, merevisi ekspresi wajah maskot sesuai masukan kepala sekolah, lalu menghasilkan file maskot final dalam berbagai pose." },
+            { id: 5, title: "Studi Kasus 5: Merancang Undangan Digital Wisuda", desc: "Panitia wisuda meminta undangan digital yang dapat dibagikan lewat media sosial. Desainer meriset gaya undangan digital yang sedang populer, membuat sketsa tata letak teks dan foto, mendigitalkan undangan, mengirim draf untuk direvisi bagian susunan acara, lalu mengekspor undangan final dalam format gambar dan video pendek." },
+            { id: 6, title: "Studi Kasus 6: Mendesain Konten Feed Instagram Promosi", desc: "Sebuah kedai jajanan sekolah ingin mempromosikan menu baru di Instagram. Tim desain meriset gaya feed akun kuliner yang menarik, membuat sketsa tata letak 3 slide konten, mendigitalkan desain dengan foto produk, merevisi warna agar konsisten dengan feed sebelumnya, lalu mengunggah hasil akhir sesuai jadwal posting." },
+            { id: 7, title: "Studi Kasus 7: Membuat Infografis Data Statistik Sekolah", desc: "Wali kelas meminta infografis jumlah dan minat ekstrakurikuler siswa untuk ditampilkan di papan informasi. Tim desain meriset data yang akan ditampilkan, membuat sketsa alur pembacaan infografis, mendigitalkan grafik dan ikon, merevisi urutan informasi agar lebih mudah dipahami, lalu mencetak infografis final." },
+            { id: 8, title: "Studi Kasus 8: Merancang Sampul Buku Kumpulan Cerpen Siswa", desc: "Klub literasi sekolah menerbitkan kumpulan cerpen karya siswa dan membutuhkan sampul buku, Desainer meriset tema utama cerpen-cerpen tersebut, membuat beberapa sketsa ilustrasi sampul, mendigitalkan sampul terpilih, merevisi tata letak judul dan nama penulis, lalu menghasilkan file sampul final siap cetak."},
+            { id: 9, title: "Studi Kasus 9: Membuat Logo Kelas untuk Kaos", desc: "Sebuah kelas ingin membuat kaos angkatan dengan logo khusus. Beberapa siswa memberikan ide yang berbeda-beda. Desainer harus mengumpulkan ide, mengelompokkan unsur yang memiliki kesamaan, menentukan simbol yang paling mewakili kelas, membuat beberapa alternatif logo, memilih desain yang paling sederhana, mengubahnya menjadi desain digital, menyesuaikan ukuran agar dapat dicetak pada kaos, kemudian menyerahkan file final kepada percetakan." },
+            { id: 10, title: "Studi Kasus 10: Membuat Poster Lomba Sekolah", desc: "OSIS meminta dibuatkan poster untuk lomba desain, fotografi, dan video. Informasi yang diberikan cukup banyak, seperti nama lomba, kategori, tanggal, tempat, syarat, hadiah, dan kontak panitia. Desainer harus menentukan informasi yang paling penting, mengelompokkan informasi berdasarkan kategori, membuat hierarki visual, menyusun layout, memasukkan elemen grafis, mengecek kembali informasi, lalu mengekspor poster untuk dibagikan melalui media sosial." },
+            { id: 11, title: "Studi Kasus 11: Memperbaiki Foto Produk untuk Promosi", desc: "Seorang teman meminta bantuan memperbaiki foto produk makanan yang akan digunakan untuk promosi. Foto memiliki masalah berupa pencahayaan kurang baik, latar belakang ramai, warna produk kurang menarik, dan komposisi kurang rapi. Desainer harus menentukan bagian yang perlu diperbaiki, memilih bagian yang harus dipertahankan, melakukan cropping, menghapus latar belakang, memperbaiki pencahayaan dan warna, kemudian menyimpan hasil akhir sesuai kebutuhan media sosial." },
+            { id: 12, title: "Studi Kasus 12: Membuat Template Presentasi Kelas", desc: "Guru meminta siswa membuat template presentasi yang dapat digunakan oleh seluruh kelompok. Setiap kelompok memiliki materi berbeda, tetapi tampilan presentasi harus tetap konsisten. Desainer mengamati kebutuhan beberapa kelompok, menentukan elemen yang harus selalu ada, membuat layout untuk halaman judul, isi, gambar, grafik, dan penutup, kemudian membuat template digital yang dapat digunakan berulang kali." },
+            { id: 13, title: "Studi Kasus 13: Mendesain Papan Nama dan Petunjuk Ruangan Sekolah", desc: "Sekolah ingin memperbarui papan nama ruang kelas dan petunjuk ruangan agar lebih mudah dibaca. Desainer harus mengamati kondisi papan yang sudah ada, menemukan masalah seperti ukuran tulisan dan penggunaan warna yang tidak konsisten, menentukan informasi penting, membuat beberapa alternatif desain, memilih ukuran huruf dan simbol yang sesuai, kemudian membuat desain final yang dapat digunakan pada berbagai ruangan." },
+            { id: 14, title: "Studi Kasus 14: Membuat Video Promosi Produk Siswa", desc: "Seorang siswa memiliki usaha kecil berupa produk kerajinan dan meminta dibuatkan video promosi berdurasi 30 detik. Bahan yang tersedia berupa beberapa foto produk, video pendek, logo, harga, dan informasi kontak. Desainer harus memilah bahan, menentukan informasi utama, menyusun urutan adegan, memilih musik, mengedit video, menambahkan teks dan transisi, melakukan pengecekan, lalu mengekspor video untuk Instagram dan TikTok." },
+            { id: 15, title: "Studi Kasus 15: Membuat Identitas Visual Acara Sekolah", desc: "Sekolah akan mengadakan pentas seni dan membutuhkan identitas visual yang konsisten. Tim desain harus membuat logo acara, poster, tiket, backdrop, unggahan Instagram, dan sertifikat. Agar semua media terlihat satu kesatuan, desainer perlu menentukan warna, jenis huruf, bentuk grafis, dan aturan penggunaannya sebelum membuat masing-masing desain." },
+            { id: 16, title: "Studi Kasus 16: Menata Layout Majalah Sekolah", desc: "Tim jurnalistik sekolah ingin menerbitkan majalah digital. Materinya terdiri atas artikel, foto, wawancara, infografis, dan iklan. Desainer harus mengelompokkan materi berdasarkan jenisnya, menemukan pola layout yang sesuai, menentukan informasi yang paling penting, membuat template halaman, menyusun setiap artikel ke dalam layout, mengecek ukuran gambar dan teks, lalu mengekspor majalah dalam format PDF." },
+            { id: 17, title: "Studi Kasus 17: Membuat Konten Promosi untuk Kantin Sekolah", desc: "Kantin sekolah memiliki menu baru dan ingin menarik lebih banyak pembeli. Tim DKV diminta membuat poster, story Instagram, dan kartu menu. Desainer mengumpulkan informasi harga dan menu, memilih foto makanan yang paling menarik, mengelompokkan menu, menentukan informasi yang perlu ditonjolkan, membuat desain dengan gaya visual yang sama, melakukan pengecekan harga dan nama menu, kemudian menyiapkan file untuk dicetak dan diunggah ke media sosial." }
+        ];
+
+        let state = {
+            currentUser: JSON.parse(localStorage.getItem('tps_currentUser')) || null,
+            students: JSON.parse(localStorage.getItem('tps_students')) || default35Students,
+            cases: JSON.parse(localStorage.getItem('tps_cases')) || defaultCases,
+            groups: JSON.parse(localStorage.getItem('tps_groups')) || [],
+            selectedPresentingGroups: JSON.parse(localStorage.getItem('tps_presenting')) || []
+        };
+
+        function saveState() {
+            localStorage.setItem('tps_students', JSON.stringify(state.students));
+            localStorage.setItem('tps_cases', JSON.stringify(state.cases));
+            localStorage.setItem('tps_groups', JSON.stringify(state.groups));
+            localStorage.setItem('tps_presenting', JSON.stringify(state.selectedPresentingGroups));
+            if (state.currentUser) {
+                localStorage.setItem('tps_currentUser', JSON.stringify(state.currentUser));
+            } else {
+                localStorage.removeItem('tps_currentUser');
+            }
+        }
+
+        function switchLoginTab(type) {
+            playClickSound();
+            const btnMurid = document.getElementById('tab-btn-murid');
+            const btnGuru = document.getElementById('tab-btn-guru');
+            const formMurid = document.getElementById('form-login-murid');
+            const formGuru = document.getElementById('form-login-guru');
+
+            if (type === 'murid') {
+                btnMurid.className = "flex-1 py-2 font-header text-xl font-bold text-ml-gold border-b-2 border-ml-gold";
+                btnGuru.className = "flex-1 py-2 font-header text-xl font-bold text-gray-400";
+                formMurid.classList.remove('hidden');
+                formGuru.classList.add('hidden');
+            } else {
+                btnGuru.className = "flex-1 py-2 font-header text-xl font-bold text-ml-purpleSoft border-b-2 border-ml-purpleSoft";
+                btnMurid.className = "flex-1 py-2 font-header text-xl font-bold text-gray-400";
+                formGuru.classList.remove('hidden');
+                formMurid.classList.add('hidden');
+            }
+        }
+
+        function loginMurid(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('login-nama-murid').value.trim();
+            if (!nameInput) return;
+
+            state.currentUser = { role: 'murid', name: nameInput };
+            if (!state.students.includes(nameInput)) {
+                state.students.push(nameInput);
+            }
+            saveState();
+            showNotification(`Selamat datang, Player ${nameInput}!`, "success");
+            updateUI();
+        }
+
+        function loginGuru(e) {
+            e.preventDefault();
+            const passInput = document.getElementById('login-sandi-guru').value.trim();
+            
+            if (passInput === "Ema Humaera") {
+                state.currentUser = { role: 'guru', name: 'Guru / Game Master' };
+                document.getElementById('login-sandi-guru').value = '';
+                saveState();
+                showNotification("Akses Master Guru berhasil dibuka!", "success");
+                updateUI();
+            } else {
+                showNotification("Kunci akses/sandi Guru tidak valid!", "error");
+            }
+        }
+
+        function logout() {
+            state.currentUser = null;
+            saveState();
+            showNotification("Anda telah keluar dari arena.", "info");
+            updateUI();
+        }
+
+        function switchGuruTab(tabId) {
+            playClickSound();
+            document.querySelectorAll('.guru-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+        }
+
+        function muat35SiswaBawaan() {
+            state.students = [...default35Students];
+            saveState();
+            showNotification("Berhasil memuat 35 siswa default!", "success");
+            updateUI();
+        }
+
+        function simpanTextMurid() {
+            const txt = document.getElementById('input-murid-text').value.trim();
+            if (!txt) return;
+            const names = txt.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+            let count = 0;
+            names.forEach(n => {
+                if (!state.students.includes(n)) {
+                    state.students.push(n);
+                    count++;
+                }
+            });
+            document.getElementById('input-murid-text').value = '';
+            saveState();
+            showNotification(`Berhasil menambahkan ${count} murid baru ke squad!`, "success");
+            updateUI();
+        }
+
+        function importMuridFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+                let addedCount = 0;
+                lines.forEach(name => {
+                    if (!state.students.includes(name)) {
+                        state.students.push(name);
+                        addedCount++;
+                    }
+                });
+                saveState();
+                updateUI();
+                showNotification(`Berhasil mengimpor ${addedCount} murid dari file!`, "success");
+            };
+            reader.readAsText(file);
+        }
+
+        function resetDaftarMurid() {
+            showCustomConfirm("Apakah Anda yakin ingin menghapus semua data murid?", () => {
+                state.students = [];
+                state.groups = [];
+                state.selectedPresentingGroups = [];
+                saveState();
+                showNotification("Semua data murid telah dikosongkan.", "info");
+                updateUI();
+            });
+        }
+
+        function tambahKasus() {
+            const judul = document.getElementById('kasus-judul').value.trim();
+            const deskripsi = document.getElementById('kasus-deskripsi').value.trim();
+            if (!judul || !deskripsi) {
+                showNotification("Judul dan Deskripsi kasus tidak boleh kosong!", "warning");
+                return;
+            }
+            const newId = state.cases.length > 0 ? Math.max(...state.cases.map(c => c.id)) + 1 : 1;
+            state.cases.push({ id: newId, title: judul, desc: deskripsi });
+            document.getElementById('kasus-judul').value = '';
+            document.getElementById('kasus-deskripsi').value = '';
+            saveState();
+            showNotification("Studi kasus baru berhasil ditambahkan!", "success");
+            updateUI();
+        }
+
+        function hapusKasus(id) {
+            showCustomConfirm("Apakah Anda yakin ingin menghapus kasus ini?", () => {
+                state.cases = state.cases.filter(c => c.id !== id);
+                saveState();
+                showNotification("Studi kasus berhasil dihapus.", "info");
+                updateUI();
+            });
+        }
+
+        function acakKelompokSistem() {
+            playClickSound();
+            if (state.students.length === 0) {
+                showNotification("Tambahkan murid terlebih dahulu!", "warning");
+                return;
+            }
+            
+            const shuffled = [...state.students].sort(() => Math.random() - 0.5);
+            state.groups = [];
+            
+            let i = 0;
+            let groupIndex = 1;
+            
+            while (i < shuffled.length) {
+                let size = 2; 
+                if (shuffled.length - i === 3) size = 3;
+
+                const members = shuffled.slice(i, i + size);
+                const assignedCase = state.cases.length > 0 ? state.cases[(groupIndex - 1) % state.cases.length] : null;
+                
+                let initialIndividualAnswers = {};
+                members.forEach(m => {
+                    initialIndividualAnswers[m] = { q1: '', q2: '', q3: '', q4: '' };
+                });
+
+                state.groups.push({
+                    id: groupIndex,
+                    name: `Squad ${groupIndex}`,
+                    members: members,
+                    caseId: assignedCase ? assignedCase.id : null,
+                    individualAnswers: initialIndividualAnswers,
+                    groupAnswer: { q1: '', q2: '', q3: '' },
+                    individualScores: {},
+                    groupScore: 0,
+                    status: 'belum_presentasi'
+                });
+                
+                i += size;
+                groupIndex++;
+            }
+            
+            state.selectedPresentingGroups = [];
+            saveState();
+            showNotification(`Berhasil membuat ${state.groups.length} Squad secara acak!`, "success");
+            document.getElementById('arena-kelompok-grid').classList.remove('hidden');
+            updateUI();
+        }
+
+        function acak3KelompokPresentasi() {
+            const unpresented = state.groups.filter(g => g.status === 'belum_presentasi');
+            if (unpresented.length === 0) {
+                showNotification("Semua kelompok telah selesai presentasi!", "info");
+                return;
+            }
+
+            const shuffled = [...unpresented].sort(() => Math.random() - 0.5);
+            const picked = shuffled.slice(0, 3);
+            state.selectedPresentingGroups = picked.map(g => g.id);
+            saveState();
+            showNotification(`3 Squad terpilih dipanggil ke Panggung!`, "success");
+            updateUI();
+        }
+
+        function beriNilaiGroup(groupId) {
+            const group = state.groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            group.members.forEach(m => {
+                const el = document.getElementById(`score-indiv-${groupId}-${m}`);
+                if (el && el.value !== "") group.individualScores[m] = Number(el.value);
+            });
+
+            const gVal = document.getElementById(`score-group-${groupId}`);
+            if (gVal && gVal.value !== "") group.groupScore = Number(gVal.value);
+
+            saveState();
+            showNotification(`Nilai untuk ${group.name} berhasil disimpan!`, "success");
+            updateUI();
+        }
+
+        function downloadHasilKerja(format = 'csv') {
+            if (!state.groups || state.groups.length === 0) {
+                showNotification("Belum ada data kelompok / hasil kerja murid!", "warning");
+                return;
+            }
+
+            if (format === 'csv') {
+                let csvContent = "\uFEFF"; // UTF-8 BOM for Excel compatibility
+                csvContent += "Squad;Nama Siswa;Judul Kasus;Nilai Individu;Nilai Squad;THINK Q1 (Dekomposisi Masalah);THINK Q2 (Pengenalan Pola);THINK Q3 (Abstraksi);THINK Q4 (Algoritma dan Diagram Alir);PAIR Q1 (Kesepakatan);PAIR Q2 (menggambarkan); PAIR Q3 (Kesimpulan);SHARE Ringkasan;SHARE Tanggapan\n";
+
+                state.groups.forEach(g => {
+                    const c = state.cases.find(x => x.id === g.caseId);
+                    const caseTitle = c ? c.title.replace(/"/g, '""') : '-';
+                    let gAns = g.groupAnswer;
+                    if (typeof gAns === 'string' || !gAns) gAns = { q1: gAns || '', q2: '', q3: '', share_ringkasan: '', share_tanggapan: '' };
+
+                    const pairQ1 = `"${(gAns.q1 || '').replace(/"/g, '""')}"`;
+                    const pairQ2 = `"${(gAns.q2 || '').replace(/"/g, '""')}"`;
+                    const pairQ3 = `"${(gAns.q3 || '').replace(/"/g, '""')}"`;
+                    const share1 = `"${(gAns.share_ringkasan || '').replace(/"/g, '""')}"`;
+                    const share2 = `"${(gAns.share_tanggapan || '').replace(/"/g, '""')}"`;
+                    const gScore = g.groupScore !== undefined ? g.groupScore : '-';
+
+                    g.members.forEach(m => {
+                        let mAns = g.individualAnswers[m];
+                        if (typeof mAns === 'string' || !mAns) mAns = { q1: mAns || '', q2: '', q3: '', q4: '' };
+
+                        const iScore = g.individualScores[m] !== undefined ? g.individualScores[m] : '-';
+                        const tQ1 = `"${(mAns.q1 || '').replace(/"/g, '""')}"`;
+                        const tQ2 = `"${(mAns.q2 || '').replace(/"/g, '""')}"`;
+                        const tQ3 = `"${(mAns.q3 || '').replace(/"/g, '""')}"`;
+                        const tQ4 = `"${(mAns.q4 || '').replace(/"/g, '""')}"`;
+
+                        csvContent += `"${g.name}";"${m}";"${caseTitle}";"${iScore}";"${gScore}";${tQ1};${tQ2};${tQ3};${tQ4};${pairQ1};${pairQ2};${pairQ3};${share1};${share2}\n`;
+                    });
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "Laporan_Nilai_TPS.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showNotification("File CSV Laporan Evaluasi berhasil diunduh!", "success");
+            } 
+            else if (format === 'txt') {
+                let txtContent = "Laporan Evaluasi Arena TPS (Think-Pair-Share)\n";
+                txtContent += "=================================================\n\n";
+
+                state.groups.forEach(g => {
+                    const c = state.cases.find(x => x.id === g.caseId);
+                    txtContent += `[${g.name.toUpperCase()}]\n`;
+                    txtContent += `Studi Kasus: ${c ? c.title : '-'}\n`;
+                    txtContent += `Nilai Kelompok: ${g.groupScore || 0}\n\n`;
+
+                    txtContent += `>>> FASE THINK (Kerja Individu)\n`;
+                    g.members.forEach(m => {
+                        txtContent += ` - Siswa: ${m} (Nilai: ${g.individualScores[m] || 0})\n`;
+                        let mAns = g.individualAnswers[m] || { q1:'', q2:'', q3:'', q4:'' };
+                        txtContent += `   1. Dekomposisi Masalah: ${mAns.q1}\n`;
+                        txtContent += `   2. Pengenalan Pola: ${mAns.q2}\n`;
+                        txtContent += `   3. Abstraksi: ${mAns.q3}\n`;
+                        txtContent += `   4. Algoritma dan Diagram Alir: ${mAns.q4}\n\n`;
+                    });
+
+                    let gAns = g.groupAnswer || { q1:'', q2:'', q3:'', share_ringkasan:'', share_tanggapan:'' };
+                    txtContent += `>>> FASE PAIR (Diskusi Kelompok)\n`;
+                    txtContent += `   1. Kesepakatan: ${gAns.q1}\n`;
+                    txtContent += `   2. Penyelesaian: ${gAns.q2}\n`;
+                    txtContent += `   3. Kesimpulan: ${gAns.q3}\n\n`;
+
+                    txtContent += `>>> FASE SHARE (Berbagi Kelas)\n`;
+                    txtContent += `   Ringkasan Presentasi: ${gAns.share_ringkasan}\n`;
+                    txtContent += `   Tanggapan Kelompok Lain: ${gAns.share_tanggapan}\n`;
+                    
+                    txtContent += `-------------------------------------------------\n\n`;
+                });
+
+                const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "Laporan_Hasil_Diskusi.txt");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showNotification("File TXT Laporan Evaluasi berhasil diunduh!", "success");
+            }
+        }
+
+        function simpanJawabanMurid(e) {
+            e.preventDefault();
+            if (!state.currentUser || state.currentUser.role !== 'murid') return;
+
+            const muridName = state.currentUser.name;
+            const group = state.groups.find(g => g.members.includes(muridName));
+            if (!group) {
+                showNotification("Anda belum mendapatkan kelompok!", "error");
+                return;
+            }
+
+            // Simpan FASE THINK per murid
+            group.members.forEach(m => {
+                const elQ1 = document.getElementById(`think-q1-${m}`);
+                const elQ2 = document.getElementById(`think-q2-${m}`);
+                const elQ3 = document.getElementById(`think-q3-${m}`);
+                const elQ4 = document.getElementById(`think-q4-${m}`);
+                if (elQ1 && elQ2 && elQ3 && elQ4) {
+                    group.individualAnswers[m] = {
+                        q1: elQ1.value,
+                        q2: elQ2.value,
+                        q3: elQ3.value,
+                        q4: elQ4.value
+                    };
+                }
+            });
+
+            // Simpan FASE PAIR & SHARE (Perwakilan kelompok simpan)
+            const elPairQ1 = document.getElementById('pair-q1');
+            const elPairQ2 = document.getElementById('pair-q2');
+            const elPairQ3 = document.getElementById('pair-q3');
+            const elShare1 = document.getElementById('share-ringkasan');
+            const elShare2 = document.getElementById('share-tanggapan');
+            
+            group.groupAnswer = {
+                q1: elPairQ1 ? elPairQ1.value : '',
+                q2: elPairQ2 ? elPairQ2.value : '',
+                q3: elPairQ3 ? elPairQ3.value : '',
+                share_ringkasan: elShare1 ? elShare1.value : '',
+                share_tanggapan: elShare2 ? elShare2.value : ''
+            };
+
+            saveState();
+            playVictorySound();
+            showNotification("Data diskusi LKPD Anda berhasil dikirim ke server Guru!", "success");
+        }
+
+        function updateUI() {
+            renderStatusBar();
+            if (!state.currentUser) {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('guru-dashboard').classList.add('hidden');
+                document.getElementById('murid-dashboard').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('login-screen').classList.add('hidden');
+            
+            if (state.currentUser.role === 'guru') {
+                document.getElementById('guru-dashboard').classList.remove('hidden');
+                document.getElementById('murid-dashboard').classList.add('hidden');
+                renderGuruTabs();
+            } else {
+                document.getElementById('guru-dashboard').classList.add('hidden');
+                document.getElementById('murid-dashboard').classList.remove('hidden');
+                renderMuridDashboard();
+            }
+        }
+
+        function renderStatusBar() {
+            const bar = document.getElementById('user-status-bar');
+            if (!state.currentUser) {
+                bar.innerHTML = `<span class="bg-ml-dark px-4 py-2 rounded-lg border border-ml-gold/40 text-xs font-header text-gray-400"><i class="fa-solid fa-user-xmark mr-1"></i> Not Logged In</span>`;
+                return;
+            }
+
+            bar.innerHTML = `
+                <div class="flex items-center gap-3 bg-ml-dark px-4 py-2 rounded-xl border border-${state.currentUser.role === 'guru' ? 'ml-cyan' : 'ml-gold'}/50">
+                    <i class="fa-solid ${state.currentUser.role === 'guru' ? 'fa-crown text-ml-cyan' : 'fa-user-ninja text-ml-gold'}"></i>
+                    <div>
+                        <span class="text-[10px] text-gray-400 font-header uppercase block">${state.currentUser.role === 'guru' ? 'Game Master' : 'Player Active'}</span>
+                        <span class="text-sm font-bold text-white">${state.currentUser.name}</span>
+                    </div>
+                    <button onclick="logout()" class="ml-3 text-red-400 hover:text-red-300 ml-btn-orange px-2 py-1 rounded text-xs shadow-none"><i class="fa-solid fa-power-off"></i></button>
+                </div>
+            `;
+        }
+
+        function renderGuruTabs() {
+            document.getElementById('count-murid').innerText = state.students.length;
+            
+            const listMuridBox = document.getElementById('list-murid-box');
+            listMuridBox.innerHTML = state.students.length === 0 ? 
+                '<p class="text-gray-500 italic p-2 text-center text-xs">Belum ada murid. Impor data sekarang.</p>' : 
+                state.students.map((n, i) => `<div class="p-2 bg-ml-card rounded border border-ml-gold/20 flex justify-between"><span class="font-header text-gray-300">${i+1}. ${n}</span></div>`).join('');
+
+            const listKasusBox = document.getElementById('list-kasus-box');
+            listKasusBox.innerHTML = state.cases.length === 0 ?
+                '<p class="text-gray-500 italic p-2 text-center text-xs">Belum ada kasus.</p>' :
+                state.cases.map(c => `
+                    <div class="p-3 bg-ml-card rounded-lg border border-ml-gold/30">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-ml-cyan text-sm">${c.title}</h4>
+                            <button onclick="hapusKasus(${c.id})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-1 line-clamp-2">${c.desc}</p>
+                    </div>
+                `).join('');
+
+            const kelompokGrid = document.getElementById('arena-kelompok-grid');
+            if (state.groups.length === 0) {
+                kelompokGrid.innerHTML = `<div class="col-span-full text-center p-8 border-2 border-dashed border-ml-gold/30 rounded-2xl"><i class="fa-solid fa-ghost text-4xl text-ml-gold/30 mb-3 block"></i><p class="text-gray-500 font-header text-lg">Belum ada Matchmaking. Silahkan acak murid.</p></div>`;
+            } else {
+                kelompokGrid.innerHTML = state.groups.map(g => {
+                    const c = state.cases.find(x => x.id === g.caseId);
+                    return `
+                        <div class="ml-card-gold p-4 rounded-xl border border-ml-gold/50 shadow-lg relative overflow-hidden group hover:border-ml-cyan transition-colors">
+                            <div class="absolute top-0 right-0 bg-ml-gold text-black text-[10px] font-bold px-2 py-1 rounded-bl-lg">Arena Terkunci</div>
+                            <h4 class="ml-title text-2xl text-ml-gold flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> ${g.name}</h4>
+                            <div class="mt-2 text-xs text-gray-300">
+                                <span class="font-bold text-ml-cyan block mb-1 uppercase font-header"><i class="fa-solid fa-map-location-dot"></i> Quest: ${c ? c.title : '-'}</span>
+                                <ul class="space-y-1 mt-2">
+                                    ${g.members.map(m => `<li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-ml-orange"></div> ${m}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const jawabanList = document.getElementById('list-jawaban-kelompok');
+            if (state.groups.length === 0) {
+                jawabanList.innerHTML = `<p class="text-gray-500 italic p-4 text-center">Belum ada data evaluasi karena Matchmaking belum dibuat.</p>`;
+            } else {
+                jawabanList.innerHTML = state.groups.map(g => {
+                    let c = state.cases.find(x => x.id === g.caseId);
+                    
+                    let gAns = g.groupAnswer;
+                    if (typeof gAns === 'string' || !gAns) gAns = { q1: gAns || '', q2: '', q3: '', share_ringkasan: '', share_tanggapan: '' };
+
+                    const memberAnswersHTML = g.members.map(m => {
+                        let mAns = g.individualAnswers[m];
+                        if (typeof mAns === 'string' || !mAns) mAns = { q1: mAns || '', q2: '', q3: '', q4: '' };
+
+                        return `
+                            <div class="bg-ml-dark/60 p-3 rounded border border-ml-cyan/20">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-ml-orangeSoft font-header text-sm"><i class="fa-solid fa-user-astronaut"></i> ${m}</span>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-[10px] text-gray-400 uppercase">Nilai Pribadi:</label>
+                                        <input type="number" id="score-indiv-${g.id}-${m}" value="${g.individualScores[m] || ''}" class="w-16 bg-ml-card border border-ml-gold/40 rounded p-1 text-xs text-white text-center focus:border-ml-cyan focus:outline-none">
+                                    </div>
+                                </div>
+                                <div class="space-y-2 text-xs text-gray-300">
+                                    <div><span class="text-ml-cyan font-bold">1. Dekomposisi:</span> ${mAns.q1 || '<span class="text-gray-600 italic">Belum dikerjakan</span>'}</div>
+                                    <div><span class="text-ml-cyan font-bold">2. Pola:</span> ${mAns.q2 || '<span class="text-gray-600 italic">Belum dikerjakan</span>'}</div>
+                                    <div><span class="text-ml-cyan font-bold">3. Abstraksi:</span> ${mAns.q3 || '<span class="text-gray-600 italic">Belum dikerjakan</span>'}</div>
+                                    <div><span class="text-ml-cyan font-bold">4. Algoritma:</span> ${mAns.q4 || '<span class="text-gray-600 italic">Belum dikerjakan</span>'}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="bg-ml-dark p-5 rounded-xl border border-ml-gold/30 shadow-md">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-ml-gold/20 pb-3">
+                                <div>
+                                    <h4 class="ml-title text-3xl text-ml-gold">${g.name}</h4>
+                                    <p class="text-xs text-gray-400 mt-1 uppercase font-header"><i class="fa-solid fa-book mr-1"></i> ${c ? c.title : '-'}</p>
+                                </div>
+                                <div class="flex items-center gap-3 bg-ml-card-gold px-4 py-2 rounded-lg border border-ml-gold">
+                                    <label class="text-xs font-header text-ml-gold font-bold uppercase">SCORE SQUAD:</label>
+                                    <input type="number" id="score-group-${g.id}" value="${g.groupScore || ''}" class="w-20 bg-ml-dark border-2 border-ml-gold rounded p-1.5 text-base font-bold text-ml-gold text-center focus:border-ml-cyan focus:outline-none">
+                                    <button onclick="beriNilaiGroup(${g.id})" class="ml-btn-cyan px-3 py-1.5 rounded text-xs font-header font-bold uppercase"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-3">
+                                    <h5 class="text-xs font-header uppercase text-gray-400 font-bold bg-ml-cyan/10 p-2 rounded inline-block"><i class="fa-solid fa-brain text-ml-cyan"></i> D. TAHAP THINK (Evaluasi Individu)</h5>
+                                    ${memberAnswersHTML}
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="bg-ml-dark/60 p-4 rounded-lg border border-ml-orange/30">
+                                        <h5 class="text-xs font-header uppercase text-gray-400 font-bold bg-ml-orange/10 p-2 rounded inline-block mb-3"><i class="fa-solid fa-people-group text-ml-orange"></i> E. TAHAP PAIR (Kesepakatan Squad)</h5>
+                                        <div class="space-y-3 text-sm text-gray-200">
+                                            <div><span class="font-bold text-ml-cyan block">1. Kesepakatan Empat Fondasi CT:</span> ${gAns.q1 || '<span class="text-gray-600 italic">Belum disepakati</span>'}</div>
+                                            <div><span class="font-bold text-ml-cyan block">2. Cara Menggambarkan Penyelesaian:</span> <pre class="font-mono text-xs whitespace-pre-wrap mt-1 text-gray-300 bg-black/40 p-2 rounded border border-gray-700">${gAns.q2 || 'Belum diisi'}</pre></div>
+                                            <div><span class="font-bold text-ml-cyan block">3. Kesimpulan Kelompok:</span> ${gAns.q3 || '<span class="text-gray-600 italic">Belum ada kesimpulan</span>'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-ml-dark/60 p-4 rounded-lg border border-ml-purple/30 mt-4">
+                                        <h5 class="text-xs font-header uppercase text-gray-400 font-bold bg-ml-purple/20 p-2 rounded inline-block mb-3"><i class="fa-solid fa-share-nodes text-ml-purpleSoft"></i> F. TAHAP SHARE (Berbagi Kelas)</h5>
+                                        <div class="space-y-3 text-sm text-gray-200">
+                                            <div><span class="font-bold text-ml-cyan block">1. Ringkasan Presentasi:</span> ${gAns.share_ringkasan || '<span class="text-gray-600 italic">Belum ada ringkasan</span>'}</div>
+                                            <div><span class="font-bold text-ml-cyan block">2. Tanggapan Kelompok Lain:</span> ${gAns.share_tanggapan || '<span class="text-gray-600 italic">Belum ada tanggapan</span>'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Presentasi Rendering
+            const presentasiGrid = document.getElementById('panggung-presentasi-grid');
+            const sisaGrid = document.getElementById('list-kelompok-sisa');
+            const selesaiGrid = document.getElementById('list-kelompok-selesai');
+            
+            const selectedGroups = state.groups.filter(g => state.selectedPresentingGroups.includes(g.id));
+            const sisaGroups = state.groups.filter(g => g.status === 'belum_presentasi' && !state.selectedPresentingGroups.includes(g.id));
+            const selesaiGroups = state.groups.filter(g => g.status === 'sudah_presentasi');
+
+            document.getElementById('badge-count-sisa').innerText = `${sisaGroups.length} Group`;
+            document.getElementById('badge-count-selesai').innerText = `${selesaiGroups.length} Group`;
+
+            presentasiGrid.innerHTML = selectedGroups.length === 0 ? 
+                `<div class="col-span-full text-center p-6 border border-dashed border-ml-orange/40 rounded-xl text-gray-500 font-header">Belum ada kelompok yang ditarik ke panggung.</div>` :
+                selectedGroups.map(g => `
+                    <div class="bg-gradient-to-b from-ml-cardOrange to-ml-dark p-4 rounded-xl border-2 border-ml-orange shadow-[0_0_15px_rgba(249,115,22,0.3)] relative group">
+                        <div class="absolute -top-3 -right-3 bg-red-600 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold animate-pulse"><i class="fa-solid fa-microphone"></i></div>
+                        <h4 class="font-title text-2xl text-ml-orangeSoft mb-2">${g.name}</h4>
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            ${g.members.map(m => `<span class="bg-black/50 px-2 py-1 rounded text-[10px] text-gray-300 border border-gray-700">${m}</span>`).join('')}
+                        </div>
+                        <button onclick="showPPTModal(${g.id})" class="w-full ml-btn-orange py-2 rounded-lg font-header font-bold text-sm">BUKA LAYAR PRESENTASI</button>
+                    </div>
+                `).join('');
+
+            sisaGrid.innerHTML = sisaGroups.map(g => `<div class="bg-ml-dark px-3 py-2 rounded border border-ml-cyan/30 text-xs text-gray-300 flex justify-between"><span class="font-bold">${g.name}</span></div>`).join('');
+            selesaiGrid.innerHTML = selesaiGroups.map(g => `<div class="bg-ml-dark px-3 py-2 rounded border border-green-500/30 text-xs text-gray-300 flex justify-between opacity-70"><span class="font-bold">${g.name}</span> <i class="fa-solid fa-check text-green-400"></i></div>`).join('');
+        }
+
+        function renderMuridDashboard() {
+            const userName = state.currentUser.name;
+            document.getElementById('murid-welcome-name').innerText = userName;
+
+            const group = state.groups.find(g => g.members.includes(userName));
+            const teamMembersDiv = document.getElementById('murid-team-members');
+            const infoGroup = document.getElementById('murid-group-info');
+            const caseTitle = document.getElementById('murid-kasus-judul');
+            const caseDesc = document.getElementById('murid-kasus-deskripsi');
+
+            if (!group) {
+                infoGroup.innerText = "Status Kelompok: Belum Diacak Guru";
+                infoGroup.className = "text-sm text-red-400 font-header font-bold";
+                teamMembersDiv.innerHTML = `<span class="text-gray-500 italic">Menunggu Matchmaking...</span>`;
+                caseTitle.innerText = "Menunggu Penugasan Kasus...";
+                caseDesc.innerText = "";
+                document.getElementById('score-pribadi').innerText = "-";
+                document.getElementById('score-kelompok').innerText = "-";
+                document.getElementById('container-pendapat-pribadi').innerHTML = '<p class="text-gray-500 italic">Anda belum memiliki kelompok.</p>';
+                return;
+            }
+
+            infoGroup.innerText = `Status Kelompok: ${group.name} (Arena Aktif)`;
+            infoGroup.className = "text-sm text-ml-cyan font-header font-bold";
+            
+            teamMembersDiv.innerHTML = `
+                <span class="block text-[10px] text-ml-gold font-header uppercase mb-1">Rekan Squad:</span>
+                <div class="flex flex-wrap gap-2">
+                    ${group.members.map(m => `<span class="bg-ml-card border border-ml-gold/30 px-2 py-1 rounded text-xs ${m === userName ? 'text-ml-cyan font-bold' : 'text-gray-300'}">${m}</span>`).join('')}
+                </div>
+            `;
+
+            const c = state.cases.find(x => x.id === group.caseId);
+            if (c) {
+                caseTitle.innerText = c.title;
+                caseDesc.innerText = c.desc;
+            }
+
+            document.getElementById('score-pribadi').innerText = group.individualScores[userName] !== undefined ? group.individualScores[userName] : "0";
+            document.getElementById('score-kelompok').innerText = group.groupScore !== undefined ? group.groupScore : "0";
+
+            // FASE THINK Inputs
+            const thinkContainer = document.getElementById('container-pendapat-pribadi');
+            let mAns = group.individualAnswers[userName];
+            if (typeof mAns === 'string' || !mAns) mAns = { q1: mAns || '', q2: '', q3: '', q4: '' };
+
+            thinkContainer.innerHTML = `
+                <div class="bg-ml-dark/80 p-5 rounded-xl border border-ml-gold/30 space-y-4">
+                    <div>
+                        <label class="block text-sm font-header uppercase text-ml-cyan mb-1 font-bold">1. Dekomposisi Masalah</label>
+                        <p class="text-[11px] text-gray-400 mb-2">Pecah masalah utama menjadi bagian-bagian yang lebih kecil. Apa saja langkah-langkah detail yang harus dilakukan tim desain berdasarkan studi kasus di atas?</p>
+                        <textarea id="think-q1-${userName}" rows="3" class="w-full bg-ml-card border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm custom-scroll" placeholder="Tuliskan dekomposisi masalah di sini...">${mAns.q1}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-header uppercase text-ml-cyan mb-1 font-bold">2. Pengenalan Pola</label>
+                        <p class="text-[11px] text-gray-400 mb-2">Kenali pola atau kesamaan dari proyek desain sebelumnya atau hal serupa. Informasi penting apa saja yang dapat digunakan kembali atau menjadi acuan untuk proyek ini?</p>
+                        <textarea id="think-q2-${userName}" rows="3" class="w-full bg-ml-card border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm custom-scroll" placeholder="Tuliskan pengenalan pola di sini...">${mAns.q2}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-header uppercase text-ml-cyan mb-1 font-bold">3. Abstraksi</label>
+                        <p class="text-[11px] text-gray-400 mb-2">Fokus pada informasi yang paling penting dan abaikan detail yang tidak perlu. Dari semua informasi yang ada, hal pokok apa saja yang paling menentukan keberhasilan proyek ini?</p>
+                        <textarea id="think-q3-${userName}" rows="3" class="w-full bg-ml-card border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm custom-scroll" placeholder="Tuliskan abstraksi di sini...">${mAns.q3}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-header uppercase text-ml-cyan mb-1 font-bold">4. Algoritma dan Diagram Alir</label>
+                        <p class="text-[11px] text-gray-400 mb-2">Buatlah urutan langkah yang sistematis untuk menyelesaikan masalah desain. (Tuliskan secara berurutan langkah 1, 2, 3...)</p>
+                        <textarea id="think-q4-${userName}" rows="4" class="w-full bg-ml-card border border-ml-gold/40 rounded-lg p-3 text-white focus:outline-none focus:border-ml-cyan text-sm custom-scroll font-mono" placeholder="1. ...\n2. ...">${mAns.q4}</textarea>
+                    </div>
+                </div>
+            `;
+
+            // FASE PAIR & SHARE
+            let gAns = group.groupAnswer;
+            if (typeof gAns === 'string' || !gAns) gAns = { q1: gAns || '', q2: '', q3: '', share_ringkasan: '', share_tanggapan: '' };
+
+            document.getElementById('pair-q1').value = gAns.q1;
+            document.getElementById('pair-q2').value = gAns.q2;
+            document.getElementById('pair-q3').value = gAns.q3;
+            document.getElementById('share-ringkasan').value = gAns.share_ringkasan;
+            document.getElementById('share-tanggapan').value = gAns.share_tanggapan;
+        }
+
+        let pptTimerInterval = null;
+        let pptTimeRemaining = 300; // 5 minutes
+        let activePPTGroupId = null;
+
+        function showPPTModal(groupId) {
+            playClickSound();
+            const group = state.groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            activePPTGroupId = groupId;
+            const c = state.cases.find(x => x.id === group.caseId);
+
+            document.getElementById('ppt-group-title').innerText = group.name.toUpperCase();
+            document.getElementById('ppt-group-members').innerText = group.members.join(' | ');
+            document.getElementById('ppt-kasus-judul').innerText = c ? c.title : 'Tanpa Studi Kasus';
+
+            let gAns = group.groupAnswer;
+            if (typeof gAns === 'string' || !gAns) gAns = { q1: gAns || '', q2: '', q3: '', share_ringkasan: '', share_tanggapan: '' };
+
+            document.getElementById('ppt-slide-content').innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-ml-dark/50 p-4 rounded-xl border border-ml-cyan/30">
+                        <h4 class="font-header text-ml-cyan text-lg font-bold mb-2 border-b border-ml-cyan/20 pb-1">1. KESEPAKATAN IDENTIFIKASI (Empat Fondasi CT)</h4>
+                        <p class="text-gray-200 whitespace-pre-wrap">${gAns.q1 || '<i class="text-gray-500">Belum ada data kesepakatan.</i>'}</p>
+                    </div>
+                    <div class="bg-ml-dark/50 p-4 rounded-xl border border-ml-cyan/30">
+                        <h4 class="font-header text-ml-cyan text-lg font-bold mb-2 border-b border-ml-cyan/20 pb-1">2. PETA KONSEP / DIAGRAM ALIR</h4>
+                        <pre class="text-gray-200 whitespace-pre-wrap font-mono bg-black/40 p-3 rounded-lg border border-gray-700">${gAns.q2 || 'Belum ada data diagram.'}</pre>
+                    </div>
+                    <div class="bg-ml-dark/50 p-4 rounded-xl border border-ml-gold/30">
+                        <h4 class="font-header text-ml-gold text-lg font-bold mb-2 border-b border-ml-gold/20 pb-1">3. KESIMPULAN MANFAAT</h4>
+                        <p class="text-gray-200 whitespace-pre-wrap">${gAns.q3 || '<i class="text-gray-500">Belum ada kesimpulan.</i>'}</p>
+                    </div>
+                    <div class="bg-ml-dark/50 p-4 rounded-xl border border-ml-orange/30">
+                        <h4 class="font-header text-ml-orangeSoft text-lg font-bold mb-2 border-b border-ml-orange/20 pb-1">RINGKASAN PRESENTASI</h4>
+                        <p class="text-gray-200 whitespace-pre-wrap">${gAns.share_ringkasan || '<i class="text-gray-500">Belum ada ringkasan share.</i>'}</p>
+                    </div>
+                </div>
+            `;
+
+            resetPPTTimer();
+            document.getElementById('modal-ppt').classList.remove('hidden');
+        }
+
+        function closePPTModal() {
+            document.getElementById('modal-ppt').classList.add('hidden');
+            clearInterval(pptTimerInterval);
+            pptTimerInterval = null;
+            activePPTGroupId = null;
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(pptTimeRemaining / 60).toString().padStart(2, '0');
+            const s = (pptTimeRemaining % 60).toString().padStart(2, '0');
+            document.getElementById('ppt-timer-display').innerText = `${m}:${s}`;
+            
+            if (pptTimeRemaining <= 60) {
+                document.getElementById('ppt-timer-display').classList.add('text-red-500', 'animate-pulse');
+                document.getElementById('ppt-timer-display').classList.remove('text-ml-gold');
+            } else {
+                document.getElementById('ppt-timer-display').classList.remove('text-red-500', 'animate-pulse');
+                document.getElementById('ppt-timer-display').classList.add('text-ml-gold');
+            }
+        }
+
+        function togglePPTTimer() {
+            playClickSound();
+            const btnText = document.getElementById('text-timer-btn');
+            const btnIcon = document.getElementById('icon-timer-btn');
+            
+            if (pptTimerInterval) {
+                clearInterval(pptTimerInterval);
+                pptTimerInterval = null;
+                btnText.innerText = "Mulai Timer";
+                btnIcon.className = "fa-solid fa-play mr-1";
+            } else {
+                btnText.innerText = "Jeda Timer";
+                btnIcon.className = "fa-solid fa-pause mr-1";
+                pptTimerInterval = setInterval(() => {
+                    if (pptTimeRemaining > 0) {
+                        pptTimeRemaining--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(pptTimerInterval);
+                        pptTimerInterval = null;
+                        showNotification("Waktu presentasi habis!", "warning");
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetPPTTimer() {
+            playClickSound();
+            clearInterval(pptTimerInterval);
+            pptTimerInterval = null;
+            pptTimeRemaining = 300;
+            updateTimerDisplay();
+            const btnText = document.getElementById('text-timer-btn');
+            const btnIcon = document.getElementById('icon-timer-btn');
+            btnText.innerText = "Mulai Timer";
+            btnIcon.className = "fa-solid fa-play mr-1";
+        }
+
+        function finishPresentation() {
+            if (!activePPTGroupId) return;
+            const group = state.groups.find(g => g.id === activePPTGroupId);
+            if (group) {
+                group.status = 'sudah_presentasi';
+                // Menghapus dari array draft presentasi yang aktif agar berpindah ke "Selesai"
+                state.selectedPresentingGroups = state.selectedPresentingGroups.filter(id => id !== group.id);
+                saveState();
+                showNotification(`${group.name} selesai presentasi!`, "success");
+                closePPTModal();
+                updateUI();
+            }
+        }
+
+        window.onload = () => {
+            updateUI();
+        };
+    </script>
+</body>
+</html>
